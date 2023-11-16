@@ -45,7 +45,35 @@ func main() {
 		wgArticleExport.Done()
 	}()
 
+	wgArticleExport.Add(1)
+	go func() {
+		ExportToEmailWorker()
+		wgArticleExport.Done()
+	}()
+
 	wgArticleExport.Wait()
+}
+
+func ExportToEmailWorker() {
+	emailExport := services.EmailExportService{}
+	emailExport.SetCredentials(viper.GetString("smtp_host"), viper.GetString("smtp_port"), viper.GetString("smtp_username"), viper.GetString("smtp_password"))
+
+	for {
+		article, err := Repo.LockNextArticle()
+		if err != nil {
+			fmt.Printf("get article error: %s", err)
+			break
+		}
+
+		subject, exportErr := emailExport.Export(article)
+		if exportErr != nil {
+			fmt.Println("email export article error: ", exportErr.Error())
+			break
+		}
+
+		fmt.Println("  exported ", article.Id, " to email ", subject)
+
+	}
 }
 
 func ExportToFileWorkerLoop() {
@@ -61,12 +89,11 @@ func ExportToFileWorkerLoop() {
 
 		filename, exportErr := fileExport.Export(article)
 		if exportErr != nil {
-			fmt.Printf("eport article error: %s", err)
+			fmt.Printf("file export article error: %s", exportErr.Error())
 			break
 		}
 
 		fmt.Println("  exported ", article.Id, " to file ", filename)
-		//time.Sleep(time.Millisecond * 50)
 
 	}
 }
@@ -84,7 +111,7 @@ func ExportToConsoleWorkerLoop() {
 
 		filename, exportErr := consoleExport.Export(article)
 		if exportErr != nil {
-			fmt.Printf("eport article error: %s", err)
+			fmt.Printf("console export article error: %s", exportErr.Error())
 			break
 		}
 
