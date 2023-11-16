@@ -1,0 +1,6 @@
+{
+    "db_address": "127.0.0.1:3306",
+    "db_user": "user",
+    "db_password": "password",
+    "db_name": "my_database"
+}
