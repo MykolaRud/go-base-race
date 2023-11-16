@@ -12,7 +12,6 @@ import (
 	"go.uber.org/dig"
 	"log"
 	"sync"
-	"time"
 )
 
 var (
@@ -54,12 +53,11 @@ func ExportToFileWorkerLoop() {
 	fileExport.SetCatalog("./exportData")
 
 	for {
-		article, err := Repo.GetNextArticle()
+		article, err := Repo.LockNextArticle()
 		if err != nil {
 			fmt.Printf("get article error: %s", err)
 			break
 		}
-		Repo.SetArticleProcessed(article.Id)
 
 		filename, exportErr := fileExport.Export(article)
 		if exportErr != nil {
@@ -68,7 +66,7 @@ func ExportToFileWorkerLoop() {
 		}
 
 		fmt.Println("  exported ", article.Id, " to file ", filename)
-		time.Sleep(time.Millisecond * 50)
+		//time.Sleep(time.Millisecond * 50)
 
 	}
 }
@@ -78,12 +76,11 @@ func ExportToConsoleWorkerLoop() {
 	consoleExport := services.ConsoleExportService{}
 
 	for {
-		article, err := Repo.GetNextArticle()
+		article, err := Repo.LockNextArticle()
 		if err != nil {
 			fmt.Printf("get article error: %s", err)
 			break
 		}
-		Repo.SetArticleProcessed(article.Id)
 
 		filename, exportErr := consoleExport.Export(article)
 		if exportErr != nil {
@@ -92,7 +89,6 @@ func ExportToConsoleWorkerLoop() {
 		}
 
 		fmt.Println("  exported ", article.Id, " to console ", filename)
-
 	}
 }
 
@@ -139,5 +135,5 @@ func initDBHandler() interfaces.IDbHandler {
 func initRepo(dbHandler interfaces.IDbHandler, Conn *sql.DB) {
 	dbHandler.SetConn(Conn)
 
-	Repo = &repositories.ArticleRepository{dbHandler}
+	Repo = &repositories.ArticleRepository{DBHandler: dbHandler}
 }
