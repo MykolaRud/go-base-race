@@ -2,5 +2,9 @@
     "db_address": "127.0.0.1:3306",
     "db_user": "user",
     "db_password": "password",
-    "db_name": "my_database"
+    "db_name": "my_database",
+    "smtp_host": "sandbox.smtp.mailtrap.io",
+    "smtp_port": "25",
+    "smtp_username": "foo",
+    "smtp_password": "bar"
 }
