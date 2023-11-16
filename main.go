@@ -61,7 +61,7 @@ func ExportToEmailWorker() {
 	for {
 		article, err := Repo.LockNextArticle()
 		if err != nil {
-			fmt.Printf("get article error: %s", err)
+			fmt.Printf("get article error: %s\n", err)
 			break
 		}
 
@@ -83,7 +83,7 @@ func ExportToFileWorkerLoop() {
 	for {
 		article, err := Repo.LockNextArticle()
 		if err != nil {
-			fmt.Printf("get article error: %s", err)
+			fmt.Printf("get article error: %s\n", err)
 			break
 		}
 
@@ -105,7 +105,7 @@ func ExportToConsoleWorkerLoop() {
 	for {
 		article, err := Repo.LockNextArticle()
 		if err != nil {
-			fmt.Printf("get article error: %s", err)
+			fmt.Printf("get article error: %s\n", err)
 			break
 		}
 

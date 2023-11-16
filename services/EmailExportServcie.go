@@ -28,11 +28,10 @@ func (service *EmailExportService) Export(article models.Article) (path string, 
 
 	subject := fmt.Sprintf("Exported article %d", article.Id)
 	data := fmt.Sprintf("Title: %s\nUrl: %s\nCreated at: %s", article.Title, article.URL, article.CreatedAt)
-	byteData := []byte("To: goreceiver@test.mail" +
-		"\n\r" +
-		"Subject: " + subject +
-		"\n\r" +
-		data + "\r\n")
+	byteData := []byte("From: " + sender + "\r\n" +
+		"To: " + receiver[0] + "\r\n" +
+		"Subject: " + subject + "\r\n" +
+		"\r\n" + data + "\r\n")
 
 	auth := smtp.PlainAuth("", service.username, service.password, service.host)
 	smtpErr := smtp.SendMail(service.host+":"+service.port, auth, sender, receiver, byteData)
